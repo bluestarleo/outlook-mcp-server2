@@ -3,7 +3,7 @@ requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "outlook-mcp-server"
+name = "agent-outlook-mcp"
 version = "0.1.0"
 description = "MCP server for Outlook email operations"
 authors = [{name = "marlonluo2018", email = "marlonluo2018@example.com"}]
@@ -35,12 +35,12 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/marlonluo2018/outlook-mcp-server"
-Repository = "https://github.com/marlonluo2018/outlook-mcp-server"
-Issues = "https://github.com/marlonluo2018/outlook-mcp-server/issues"
+Homepage = "https://github.com/marlonluo2018/agent-outlook-mcp"
+Repository = "https://github.com/marlonluo2018/agent-outlook-mcp"
+Issues = "https://github.com/marlonluo2018/agent-outlook-mcp/issues"
 
 [project.scripts]
-outlook-mcp-server = "outlook_mcp_server:main"
+agent-outlook-mcp = "outlook_mcp_server:main"
 
 [tool.setuptools.packages.find]
 where = ["."]

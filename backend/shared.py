@@ -27,7 +27,7 @@ def configure_logging():
         logger.removeHandler(handler)
     
     # Create console handler with formatting
-    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler = logging.StreamHandler(sys.stderr)
     console_handler.setLevel(logging.INFO)
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s',

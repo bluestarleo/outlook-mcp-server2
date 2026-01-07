@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import sys
 import time
 import pythoncom
 from typing import List, Dict, Optional
@@ -54,10 +55,10 @@ def get_emails_from_folder(
                 emails = []
                 processed_count = 0
                 total_items = folder_items.Count
-                if search_term:
-                    print(f"Searching for emails containing: '{search_term}'...")
-                else:
-                    print(f"Loading emails from the last {days_to_use} days...")
+                # if search_term:
+                #     sys.stderr.write(f"Searching for emails containing: '{search_term}'...\n")
+                # else:
+                #     sys.stderr.write(f"Loading emails from the last {days_to_use} days...\n")
                 pythoncom.CoInitialize()
                 try:
                     for i in range(1, min(total_items + 1, MAX_EMAILS + 1)):
@@ -87,10 +88,11 @@ def get_emails_from_folder(
                             if received_time >= threshold_date:
                                 # Simple progress indicator for large folders
                                 if processed_count % 50 == 0:
-                                    if search_term:
-                                        print(f"Found {len(emails)} matching emails so far...")
-                                    else:
-                                        print(f"Loaded {processed_count} emails...")
+                                    pass
+                                    # if search_term:
+                                #     sys.stderr.write(f"Found {len(emails)} matching emails so far...\n")
+                                # else:
+                                #     sys.stderr.write(f"Loaded {processed_count} emails...\n")
                                 # Extract just the display name from SenderName (before first '/')
                                 sender_name = getattr(item, 'SenderName', 'Unknown Sender').split('/')[0].strip()
                                 

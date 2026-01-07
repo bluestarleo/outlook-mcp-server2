@@ -17,9 +17,6 @@ pip install fastmcp==2.11.0 pywin32==306
 ```bash
 # Start MCP server (for LLM integration)
 python outlook_mcp_server.py
-
-# Start interactive CLI (for human users)
-python cli_interface.py
 ```
 
 ### Code Quality and Testing
@@ -49,13 +46,10 @@ This is a Model Context Protocol (MCP) server that provides programmatic access 
    - `outlook_session.py`: COM session management with connection pooling
    - `email_retrieval.py`: Email search, listing, and caching operations
    - `email_composition.py`: Email creation and reply functionality
-   - `batch_operations.py`: Bulk email sending operations
+
    - `shared.py`: Global configuration and email cache management
 
-3. **CLI Interface** (`cli_interface.py`):
-   - Interactive command-line interface for human users
-   - Menu-driven workflow with email cache management
-   - Separate from MCP server (human-only interface)
+
 
 ### Key Design Patterns
 

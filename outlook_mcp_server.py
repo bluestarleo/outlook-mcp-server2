@@ -1,4 +1,5 @@
 from typing import List, Optional
+import sys
 from fastmcp import FastMCP
 from backend.outlook_session import OutlookSessionManager
 from backend.email_retrieval import (
@@ -13,11 +14,12 @@ from backend.email_retrieval import (
 )
 from backend.email_composition import (
     reply_to_email_by_number,
-    compose_email
+    compose_email,
+    compose_email_with_attachment
 )
 
 # Initialize FastMCP server
-mcp = FastMCP("outlook-assistant")
+mcp = FastMCP("agent-outlook-mcp")
 
 # MCP Tools - Imported from outlook_operations
 @mcp.tool
@@ -408,21 +410,68 @@ def compose_email_tool(recipient_email: str, subject: str, body: str, cc_email: 
         "text": result
     }
 
+@mcp.tool
+def compose_email_with_attachment_tool(
+    recipient_email: str,
+    subject: str,
+    body: str,
+    attachment_path: str,
+    attachment_filename: str,
+    cc_email: Optional[str] = None
+) -> dict:
+    """
+    IMPORTANT: You MUST get explicit user confirmation before calling this tool.
+    Never send an email without the user's direct approval.
+
+    Compose and send a new email with an attachment from a file path.
+    
+    Args:
+        recipient_email: Email address of the recipient.
+        subject: Subject line of the email.
+        body: Main content of the email.
+        attachment_path: Full path to the attachment file (from get_uploaded_image_data tool).
+        attachment_filename: Filename for the attachment (e.g., 'image.png', 'document.pdf').
+        cc_email: Optional CC email address.
+        
+    Returns:
+        dict: Response containing confirmation message.
+        {
+            "type": "text",
+            "text": "Confirmation message here"
+        }
+    """
+    if not recipient_email or not isinstance(recipient_email, str):
+        raise ValueError("Recipient email must be a non-empty string")
+    if not subject or not isinstance(subject, str):
+        raise ValueError("Subject must be a non-empty string")
+    if not body or not isinstance(body, str):
+        raise ValueError("Body must be a non-empty string")
+    if not attachment_path or not isinstance(attachment_path, str):
+        raise ValueError("Attachment path must be a non-empty string")
+    if not attachment_filename or not isinstance(attachment_filename, str):
+        raise ValueError("Attachment filename must be a non-empty string")
+    
+    result = compose_email_with_attachment(
+        to_recipients=[recipient_email],
+        subject=subject,
+        body=body,
+        attachment_path=attachment_path,
+        attachment_filename=attachment_filename,
+        cc_recipients=[cc_email] if cc_email else None
+    )
+    return {
+        "type": "text",
+        "text": result
+    }
+
 
 # Run the server
 if __name__ == "__main__":
-    print("Starting Outlook MCP Server...")
-    print("Connecting to Outlook...")
-    
     try:
-        # Test Outlook connection using context manager
-        with OutlookSessionManager() as session:
-            inbox = session.get_folder()
-            print(f"Successfully connected to Outlook. Inbox has {inbox.Items.Count} items.")
-            
-            # Run the MCP server
-            print("Starting MCP server. Press Ctrl+C to stop.")
-            mcp.run()
+        # Run the MCP server silently to avoid stdout pollution
+        mcp.run(show_banner=False, log_level="ERROR")
     except Exception as e:
-        print(f"Error starting server: {str(e)}")
+        import sys
+        print(f"Error starting server: {str(e)}", file=sys.stderr)
+        sys.exit(1)
 

@@ -123,3 +123,89 @@ def compose_email(
             
         except Exception as e:
             return f"Error composing email: {str(e)}"
+
+
+def compose_email_with_attachment(
+    to_recipients: List[str],
+    subject: str,
+    body: str,
+    attachment_path: str,
+    attachment_filename: str,
+    cc_recipients: Optional[List[str]] = None,
+    html: bool = False
+) -> str:
+    """Compose and send a new email with an attachment using Outlook COM API.
+    
+    Args:
+        to_recipients: List of recipient email addresses.
+        subject: Email subject line.
+        body: Email body content.
+        attachment_path: Full path to the attachment file.
+        attachment_filename: Display name for the attachment (e.g., 'image.png').
+        cc_recipients: Optional list of CC email addresses.
+        html: If True, body is treated as HTML (default: False).
+        
+    Returns:
+        str: Success/error message.
+    """
+    import os
+    
+    # Input validation
+    if not to_recipients or not isinstance(to_recipients, list):
+        raise ValueError("To recipients must be a non-empty list")
+    
+    if not all(isinstance(email, str) and email.strip() for email in to_recipients):
+        raise ValueError("All recipient email addresses must be non-empty strings")
+    
+    if not subject or not isinstance(subject, str):
+        raise ValueError("Subject must be a non-empty string")
+    
+    if not body or not isinstance(body, str):
+        raise ValueError("Body must be a non-empty string")
+    
+    if not attachment_path or not isinstance(attachment_path, str):
+        raise ValueError("Attachment path must be a non-empty string")
+    
+    if not os.path.exists(attachment_path):
+        raise ValueError(f"Attachment file not found: {attachment_path}")
+    
+    if not attachment_filename or not isinstance(attachment_filename, str):
+        raise ValueError("Attachment filename must be a non-empty string")
+    
+    if cc_recipients is not None:
+        if not isinstance(cc_recipients, list):
+            raise ValueError("CC recipients must be a list or None")
+        if not all(isinstance(email, str) and email.strip() for email in cc_recipients):
+            raise ValueError("All CC email addresses must be non-empty strings")
+    
+    with OutlookSessionManager() as session:
+        try:
+            # Create the mail item
+            mail = session.outlook.CreateItem(0)  # 0 = olMailItem
+            mail.To = "; ".join(to_recipients)
+            mail.Subject = subject
+            
+            if cc_recipients:
+                mail.CC = "; ".join(cc_recipients)
+                
+            if html:
+                mail.HTMLBody = body
+            else:
+                mail.Body = body
+            
+            # Add the attachment directly from the file path
+            # Parameters: Source, Type (1=olByValue), Position, DisplayName
+            mail.Attachments.Add(attachment_path, 1, 0, attachment_filename)
+                
+            mail.Send()
+            
+            # Clean up the attachment file after sending
+            try:
+                os.unlink(attachment_path)
+            except Exception:
+                pass  # Ignore cleanup errors
+            
+            return f"Email sent successfully with attachment: {attachment_filename}"
+            
+        except Exception as e:
+            return f"Error composing email with attachment: {str(e)}"

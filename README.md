@@ -1,4 +1,4 @@
-# Outlook MCP Server
+# Agent Outlook MCP
 
 > **⚠️ Windows-Only Application**  
 > This MCP server requires Windows 10/11 and Microsoft Outlook due to COM automation dependencies.
@@ -7,14 +7,14 @@ A comprehensive Model Context Protocol (MCP) server that provides secure, effici
 
 ## 🚀 Overview
 
-The Outlook MCP Server bridges the gap between AI systems and Microsoft Outlook, providing a standardized interface for email operations. Built on the Model Context Protocol, it offers both programmatic API access and interactive CLI usage patterns.
+The Agent Outlook MCP bridges the gap between AI systems and Microsoft Outlook, providing a standardized interface for email operations. Built on the Model Context Protocol, it offers programmatic API access for AI assistants.
 
 ### Key Capabilities
 
 - **Email Operations**: Search, retrieve, compose, and reply to emails
 - **Advanced Search**: Intelligent word proximity search for more accurate results
 - **Folder Management**: Browse and access all Outlook folders
-- **Batch Processing**: Send bulk emails with CSV-based recipient lists (CLI only)
+
 - **Caching System**: Intelligent email caching for performance optimization
 - **Security**: Built-in user confirmation for email sending operations
 - **Error Handling**: Comprehensive error handling with retry mechanisms
@@ -40,10 +40,13 @@ The Outlook MCP Server bridges the gap between AI systems and Microsoft Outlook,
 
 ```bash
 # Clone the repository
-git clone https://github.com/marlonluo2018/outlook-mcp-server.git
-cd outlook-mcp-server
+git clone https://github.com/marlonluo2018/agent-outlook-mcp.git
+cd agent-outlook-mcp
 
 # Create virtual environment (recommended)
+uv venv
+Activate with: .venv\Scripts\activate
+
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
@@ -67,24 +70,7 @@ Add to your MCP client configuration (e.g., Claude Desktop settings.json):
 }
 ```
 
-### Human Interface: CLI
 
-The CLI interface is designed exclusively for human users, not LLMs:
-
-- **Purpose**: Provides a human-friendly interactive interface
-- **Audience**: Only for direct human operation
-- **Security**: All operations require interactive confirmation
-- **Workflow**:
-  1. Load emails into cache (List/Search)
-  2. Operate on cached emails (View/Reply/Compose)
-  3. Cache auto-refreshes on new operations
-
-```bash
-# Start interactive session (human only)
-python cli_interface.py
-```
-
-Note: For LLM integration, use the MCP server interface instead.
 
 ### Development Installation
 
@@ -151,76 +137,7 @@ Ask your AI assistant to:
 - **Your Approval**: The AI will always ask for your confirmation before sending any emails
 - **Temporary Storage**: Email cache is only in memory - nothing is saved permanently
 
-### CLI Interface (For Direct Human Use)
 
-**🖥️ How to Use the Interactive Menu System**:
-
-**Getting Started**:
-```bash
-# Start the interactive email session
-python cli_interface.py
-```
-
-**🔄 Step-by-Step Workflow**:
-
-**Step 1: Load Emails into Cache**  
-Start by choosing one of these options:  
-- **Menu Option 2**: List recent emails (specify days and folder)  
-- **Menu Option 3**: Search email subjects (enter search terms and filters)  
-- **Menu Option 4**: Search emails by sender name (enter sender name)  
-- **Menu Option 5**: Search emails by recipient name (enter recipient name)  
-- **Menu Option 6**: Search emails by body content (enter search terms)  
-
-This clears any previous cache and loads your selected emails.
-
-**Step 2: Browse Available Emails**  
-Use **Menu Option 7** to:  
-- View all emails currently in your cache  
-- See a numbered list with subjects and senders  
-- Navigate through multiple pages if needed  
-- Note the email number you want to work with
-
-**Step 3: View Email Details**  
-Use **Menu Option 8** to:  
-- Enter the email number you want to read  
-- See the complete email content  
-- Check attachments and recipient details  
-
-**Step 4: Take Action on Email**  
-Choose your action:  
-- **Menu Option 9**: Reply to the email (enter email number)  
-- **Menu Option 10**: Compose a new email  
-- **Menu Option 11**: Send batch emails (using cached email as template)  
-
-**📋 Common Usage Patterns**:
-
-**To reply to an email**: 2 → 7 → 8 → 9  
-(List emails → View cache → Read email → Reply)
-
-**To search and respond**: 3 → 7 → 8 → 9  
-(Search email subjects → View cache → Read email → Reply)
-
-**To search by sender name and respond**: 4 → 7 → 8 → 9  
-(Search by sender name → View cache → Read email → Reply)
-
-**To search by recipient name and respond**: 5 → 7 → 8 → 9  
-(Search by recipient name → View cache → Read email → Reply)
-
-**To search by body content and respond**: 6 → 7 → 8 → 9  
-(Search by body content → View cache → Read email → Reply)
-
-**To send batch emails**: 2 → 7 → 11  
-(List emails → View cache → Send batch)
-
-**⚠️ Important Notes**:
-
-- **Cache Management**: Each time you use Option 2, 3, 4, 5, or 6, the cache is cleared and reloaded
-- **Email Numbers**: Always use the numbers shown in the current cache (Option 7)
-- **Your Confirmation**: The system asks for confirmation before sending any emails
-- **Session-Based**: Cache persists until you exit or load new emails
-- **Menu Navigation**: Use Option 0 to exit safely
-
-**Best for**: Users who prefer direct, menu-driven control over email operations or need batch email capabilities.
 
 ## 🔍 Advanced Search Features
 
@@ -432,16 +349,7 @@ For word-based searches with `match_all=true`, the system now includes intellige
 // ⚠️ Requires explicit user confirmation
 ```
 
-#### 11. Batch Email Operations (Interactive Only)
 
-**Workflow**:
-
-1. First load template emails into cache via List/Search
-2. Select cached email as template in interactive mode
-3. Provide CSV of recipients and optional custom text
-4. Confirm before sending
-
-Note: Batch operations require working with the email cache and are only available through interactive CLI.
 
 ## 📊 Data Flow Architecture
 
@@ -469,7 +377,7 @@ Operation → Try/Catch → Retry Logic → User-friendly Error → Logging
 ### Email Sending Protection
 
 - **Explicit Confirmation**: All email sending operations require user approval
-- **Rate Limiting**: Batch operations limited to 500 recipients per batch
+
 - **Input Validation**: All inputs sanitized and validated before processing
 
 ### Data Privacy
@@ -538,7 +446,7 @@ Error: No emails in cache or Invalid cache item
 
 ### v1.1.0
 - **Enhanced Email Details**: Improved email data structure with recipient information
-- **Better Body Formatting**: Enhanced email body formatting for replies and batch operations
+- **Better Body Formatting**: Enhanced email body formatting for replies
 - **MCP Response Refactoring**: Simplified response structure by removing unnecessary wrappers
 - **Improved Error Handling**: Better input validation and error messages
 - **Project Configuration**: Added pyproject.toml for proper project management
@@ -549,7 +457,7 @@ Error: No emails in cache or Invalid cache item
 - **Core Features**: Email retrieval, search, composition, and batch operations
 - **Security**: User confirmation for email sending
 - **Performance**: Email caching and timeout handling
-- **CLI**: Interactive and command-line interfaces
+
 
 ## ⚠️ Limitations
 
